@@ -43,8 +43,8 @@ pipeline {
                     echo "App is up!"
                     exit 0
                   fi
-                  echo "App not ready yet... retrying in 5s"
-                  sleep 5
+                  echo "App not ready yet... retrying in 150s"
+                  sleep 150
                 done
                 echo "App did not start!"
                 exit 1
