@@ -7,15 +7,15 @@ pipeline {
     }
 
     environment {
-        COMPOSE_FILE = 'spring-petclinic/docker-compose.yml'
+        COMPOSE_FILE = 'docker-compose.yml'
     }
 
     stages {
         stage('Checkout') {
             steps {
                 git branch: 'main',
-                    url: 'https://github.com/USERNAME/PRIVATE-REPO.git',
-                    credentialsId: 'github-token'   // الـ PAT اللي ضفته كـ Credential
+                    url: 'https://github.com/ahmed-zain10/petclinic.git',
+                    credentialsId: 'github-token'
             }
         }
 
@@ -45,7 +45,7 @@ pipeline {
 
         stage('Verify') {
             steps {
-                sh 'sleep 15' // ندي وقت للـ MySQL يشتغل
+                sh 'sleep 15'
                 sh 'curl -f http://localhost:8080 || (echo "App did not start!" && exit 1)'
             }
         }
@@ -73,4 +73,5 @@ pipeline {
         }
     }
 }
+
 
