@@ -34,11 +34,10 @@ pipeline {
                 }
             }
         }
-
         stage('Verify') {
             steps {
                 sh '''
-                for i in {1..30}; do
+                for i in $(seq 1 30); do
                   if curl -f http://localhost:7070; then
                     echo "App is up!"
                     exit 0
@@ -51,6 +50,7 @@ pipeline {
                 '''
             }
         }
+
     }
 
     post {
