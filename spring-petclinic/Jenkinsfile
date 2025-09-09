@@ -47,7 +47,7 @@ pipeline {
             steps {
                 sh '''
                 for i in {1..30}; do
-                  if curl -f http://localhost:8080; then
+                  if curl -f http://localhost:7070; then
                     echo "App is up!"
                     exit 0
                   fi
