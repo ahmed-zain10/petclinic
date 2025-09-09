@@ -45,22 +45,18 @@ pipeline {
 
         stage('Verify') {
             steps {
-                sh 'sleep 15'
-                sh 'curl -f http://localhost:8080 || (echo "App did not start!" && exit 1)'
-            }
-        }
-
-        stage('Push to GitHub') {
-            steps {
-                dir('spring-petclinic') {
-                    sh '''
-                        git config user.email "jenkins@localhost"
-                        git config user.name "Jenkins CI"
-                        git add .
-                        git commit -m "Automated build by Jenkins" || echo "No changes to commit"
-                        git push origin main
-                    '''
-                }
+                sh '''
+                for i in {1..30}; do
+                  if curl -f http://localhost:8080; then
+                    echo "App is up!"
+                    exit 0
+                  fi
+                  echo "App not ready yet... retrying in 5s"
+                  sleep 5
+                done
+                echo "App did not start!"
+                exit 1
+                '''
             }
         }
     }
@@ -73,5 +69,3 @@ pipeline {
         }
     }
 }
-
-
