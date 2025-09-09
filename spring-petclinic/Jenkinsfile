@@ -1,0 +1,67 @@
+pipeline {
+    agent any
+
+    tools {
+        maven 'Maven3'
+        jdk 'Java17'
+    }
+
+    environment {
+        COMPOSE_FILE = 'docker-compose.yml'
+        GIT_REPO = 'git@github.com:USERNAME/PRIVATE-REPO.git' // غيّر USERNAME واسم الريبو
+    }
+
+    stages {
+        stage('Checkout') {
+            steps {
+                git branch: 'main',
+                    url: 'git@github.com:USERNAME/PRIVATE-REPO.git',
+                    credentialsId: 'github-creds' // لازم تسجّل الـ SSH Key أو Personal Token في Jenkins
+            }
+        }
+
+        stage('Build JAR') {
+            steps {
+                sh 'mvn clean package -DskipTests'
+            }
+        }
+
+        stage('Build Docker Image') {
+            steps {
+                sh 'docker build -t petclinic-app .'
+            }
+        }
+
+        stage('Start with Docker Compose') {
+            steps {
+                sh 'docker compose up -d'
+            }
+        }
+
+        stage('Verify') {
+            steps {
+                sh 'sleep 15' // نستنى mysql يشتغل
+                sh 'curl -f http://localhost:8080 || (echo "App did not start!" && exit 1)'
+            }
+        }
+
+        stage('Push to GitHub') {
+            steps {
+                sh '''
+                git config user.email "jenkins@localhost"
+                git config user.name "Jenkins CI"
+                git add .
+                git commit -m "Automated build by Jenkins" || echo "No changes to commit"
+                git push origin main
+                '''
+            }
+        }
+    }
+
+    post {
+        always {
+            sh 'docker compose down'
+        }
+    }
+}
+
