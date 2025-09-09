@@ -53,11 +53,5 @@ pipeline {
 
     }
 
-    post {
-        always {
-            dir('spring-petclinic') {
-                sh 'docker compose down || true'
-            }
-        }
     }
 }
